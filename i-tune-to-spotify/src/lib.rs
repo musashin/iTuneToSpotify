@@ -1,6 +1,11 @@
 mod utils;
+extern crate xml;
+
 
 use wasm_bindgen::prelude::*;
+use std::fs::File;
+use std::io::{self, Write};
+use xml::writer::{EventWriter, EmitterConfig, XmlEvent, Result};
 
 // When the `wee_alloc` feature is enabled, use `wee_alloc` as the global
 // allocator.
@@ -15,5 +20,6 @@ extern {
 
 #[wasm_bindgen]
 pub fn greet() {
-    alert("Hello, i-tune-to-spotify!");
+    let mut file = File::create("output.xml").unwrap();
+    alert("Hello, Nicolas!");
 }
