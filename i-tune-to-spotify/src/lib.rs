@@ -1,11 +1,12 @@
 mod utils;
 extern crate xml;
+extern crate stdweb;
 
 
 use wasm_bindgen::prelude::*;
-use std::fs::File;
-use std::io::{self, Write};
-use xml::writer::{EventWriter, EmitterConfig, XmlEvent, Result};
+use web_sys::FileReader;
+
+
 
 // When the `wee_alloc` feature is enabled, use `wee_alloc` as the global
 // allocator.
@@ -20,6 +21,12 @@ extern {
 
 #[wasm_bindgen]
 pub fn greet() {
-    let mut file = File::create("output.xml").unwrap();
     alert("Hello, Nicolas!");
+}
+
+#[wasm_bindgen()]
+pub fn loadlib(file_reader : web_sys::FileReader) {
+    alert("Got the file");
+    
+    
 }
