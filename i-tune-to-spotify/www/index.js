@@ -7,7 +7,7 @@ import * as wasm from "i-tune-to-spotify";
                     if (typeof (FileReader) != "undefined") {
                         var reader = new FileReader();
                         reader.onload = function (e) {
-                            wasm.loadlib(e.target.result);
+                            wasm.loadlib(reader);
                             alert("Loaded the file.");
                             // e.target.result
                             //TODO display stats on the file

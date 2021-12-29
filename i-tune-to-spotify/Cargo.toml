@@ -31,7 +31,8 @@ wee_alloc = { version = "0.4.5", optional = true }
 [dependencies.web-sys]
 version = "0.3"
 features = [
-	"FileReader"
+	"FileReader",
+	"console"
 ]
 
 [dev-dependencies]
