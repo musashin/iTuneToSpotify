@@ -14,6 +14,10 @@ default = ["console_error_panic_hook"]
 wasm-bindgen = "0.2.63"
 xml-rs = "0.8"
 stdweb = "0.4.2"
+minidom = "0.13.0"
+quick-xml = "*"
+xmltree = "0.10"
+
 
 # The `console_error_panic_hook` crate provides better debugging of panics by
 # logging them with `console.error`. This is great for development, but requires

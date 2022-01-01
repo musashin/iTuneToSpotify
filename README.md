@@ -9,3 +9,9 @@ https://stackoverflow.com/questions/51047146/how-to-read-a-file-with-javascript-
 https://tipsfordev.com/rust-wasm-iterating-over-input-file
 https://simplabs.com/blog/2020/12/31/xml-and-rust/
 https://lib.rs/crates/xml-rs
+
+https://github.com/RazrFalcon/roxmltree
+
+
+wasm-pack build
+npm run start
