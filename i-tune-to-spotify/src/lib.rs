@@ -62,7 +62,7 @@ enum Field{
 #[derive(Debug, Eq, Clone)]
 struct Artist {
     name: String,
-    albums: Vec<String>
+    albums: HashSet::<String>
 }
 
 
@@ -122,7 +122,7 @@ pub fn parse_library(library_file_text:&str)
                     Field::Date=> log!("Date {}", text) ,
                     Field::Artist=> {
                         current_artist = Some(text.clone());
-                        library.insert(Artist{name: text, albums: Vec::new()});}
+                        library.insert(Artist{name: text, albums: HashSet::<String>::new()});}
                     Field::Album=> {
                       //log!("adding album {:?} to arist {:?}",text,current_artist);
     
@@ -130,7 +130,7 @@ pub fn parse_library(library_file_text:&str)
                         Some(album_artist) => { 
                             let lib_artist_entry = library.get(&album_artist.to_string()).unwrap();
                             let mut new_lib_artist_entry: Artist = lib_artist_entry.clone();
-                            new_lib_artist_entry.albums.push(text);
+                            new_lib_artist_entry.albums.insert(text);
                             library.replace(new_lib_artist_entry);
 
                             
