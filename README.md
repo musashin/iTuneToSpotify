@@ -10,7 +10,7 @@ https://tipsfordev.com/rust-wasm-iterating-over-input-file
 https://simplabs.com/blog/2020/12/31/xml-and-rust/
 https://lib.rs/crates/xml-rs
 
-https://github.com/RazrFalcon/roxmltree
+https://stackoverflow.com/questions/45384928/is-there-any-way-to-look-up-in-hashset-by-only-the-value-the-type-is-hashed-on
 
 
 wasm-pack build
