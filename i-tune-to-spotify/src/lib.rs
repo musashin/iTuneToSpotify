@@ -55,13 +55,14 @@ enum ParseEvent {
 enum Field{
     NoField,
     Date,
-    Artist
+    Artist,
+    Album
 }
 
-#[derive(Debug, Eq)]
+#[derive(Debug, Eq, Clone)]
 struct Artist {
-    name: String
-,
+    name: String,
+    albums: Vec<String>
 }
 
 
@@ -89,6 +90,7 @@ pub fn parse_library(library_file_text:&str)
     let mut parse_state = ParseEvent::Parsing;
     let mut field = Field::NoField;
     let mut library = HashSet::<Artist>::new();
+    let mut current_artist:Option<String> = None;
     
 
     for event in parser {
@@ -99,6 +101,7 @@ pub fn parse_library(library_file_text:&str)
 
                 if name.local_name.trim() == "date" && field == Field::Date {parse_state = ParseEvent::KeyChildFound;}
                 if name.local_name.trim() == "string" && field == Field::Artist {parse_state = ParseEvent::KeyChildFound;}
+                if name.local_name.trim() == "string" && field == Field::Album {parse_state = ParseEvent::KeyChildFound;}
             }
             
            
@@ -109,6 +112,7 @@ pub fn parse_library(library_file_text:&str)
 
                 if text.trim() == "Date"{field = Field::Date;}
                 if text.trim() == "Artist"{field = Field::Artist;}
+                if text.trim() == "Album"{field = Field::Album;}
                 
 
             }
@@ -116,7 +120,27 @@ pub fn parse_library(library_file_text:&str)
 
                 match field {
                     Field::Date=> log!("Date {}", text) ,
-                    Field::Artist=> {library.insert(Artist{name: text});}
+                    Field::Artist=> {
+                        current_artist = Some(text.clone());
+                        library.insert(Artist{name: text, albums: Vec::new()});}
+                    Field::Album=> {
+                      //log!("adding album {:?} to arist {:?}",text,current_artist);
+    
+                      match &current_artist{
+                        Some(album_artist) => { 
+                            let lib_artist_entry = library.get(&album_artist.to_string()).unwrap();
+                            let mut new_lib_artist_entry: Artist = lib_artist_entry.clone();
+                            new_lib_artist_entry.albums.push(text);
+                            library.replace(new_lib_artist_entry);
+
+                            
+                        }
+                        _ => ()
+                      }
+                   
+                         //
+                      
+                    }
                     _=>()
 
                 }
@@ -129,7 +153,7 @@ pub fn parse_library(library_file_text:&str)
             
         }
         Ok(_) => (),
-        Err(why)=>log!("unrecognized even {:?}",&why)
+        Err(why)=>log!("unrecognized event {:?}",&why)
         }
         
     }
