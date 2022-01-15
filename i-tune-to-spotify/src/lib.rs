@@ -24,6 +24,7 @@ pub fn greet() {
     alert("Hello, Nicolas!");
 }
 
+
 #[wasm_bindgen()]
 pub fn loadlib(file_reader : web_sys::FileReader) {
     //alert(file_reader.result());
@@ -84,8 +85,14 @@ impl Borrow<String> for Artist {
     }
 }
 
-pub fn parse_library(library_file_text:&str)
+//todo externalize in module library
+//todo make async
+fn parse_library(library_file_text:&str)
 {
+    log_into_spotify();
+
+    return;
+
     let parser = xml::reader::EventReader::from_str(library_file_text);
     let mut parse_state = ParseEvent::Parsing;
     let mut field = Field::NoField;
@@ -93,6 +100,7 @@ pub fn parse_library(library_file_text:&str)
     let mut current_artist:Option<String> = None;
     
 
+    //todo: only work if album...after artist
     for event in parser {
         match event {
         Ok(xml::reader::XmlEvent::StartElement{name,attributes:_,namespace:_}) => {
@@ -160,6 +168,90 @@ pub fn parse_library(library_file_text:&str)
 
     log!("Lib {:#?}", library) 
 
+
    
 }
+
+
+use oauth2::{
+    AuthorizationCode,
+    AuthUrl,
+    ClientId,
+    ClientSecret,
+    CsrfToken,
+    PkceCodeChallenge,
+    RedirectUrl,
+    Scope,
+    TokenResponse,
+    TokenUrl
+};
+use oauth2::basic::BasicClient;
+use oauth2::reqwest::async_http_client;
+use url::Url;
+
+async fn log_into_spotify()->Result<(), Box<dyn std::error::Error>> {
+
+// Create an OAuth2 client by specifying the client ID, client secret, authorization URL and
+// token URL.
+let client =
+    BasicClient::new(
+        ClientId::new("client_id".to_string()),
+        Some(ClientSecret::new("client_secret".to_string())),
+        AuthUrl::new("http://authorize".to_string())?,
+        Some(TokenUrl::new("http://token".to_string())?)
+    )
+    // Set the URL the user will be redirected to after the authorization process.
+    .set_redirect_uri(RedirectUrl::new("http://redirect".to_string())?);
+
+// Generate a PKCE challenge.
+let (pkce_challenge, pkce_verifier) = PkceCodeChallenge::new_random_sha256();
+
+// Generate the full authorization URL.
+let (auth_url, csrf_token) = client
+    .authorize_url(CsrfToken::new_random)
+    // Set the desired scopes.
+    .add_scope(Scope::new("read".to_string()))
+    .add_scope(Scope::new("write".to_string()))
+    // Set the PKCE code challenge.
+    .set_pkce_challenge(pkce_challenge)
+    .url();
+
+// This is the URL you should redirect the user to, in order to trigger the authorization
+// process.
+println!("Browse to: {}", auth_url);
+
+// Once the user has been redirected to the redirect URL, you'll have access to the
+// authorization code. For security reasons, your code should verify that the `state`
+// parameter returned by the server matches `csrf_state`.
+
+// Now you can trade it for an access token.
+let token_result = client
+    .exchange_code(AuthorizationCode::new("some authorization code".to_string()))
+    // Set the PKCE code verifier.
+    .set_pkce_verifier(pkce_verifier)
+    .request_async(async_http_client)
+    .await?;
+
+// Unwrapping token_result will either produce a Token or a RequestTokenError.
+
+    Ok(())
+}
+
+//async fn log_into_spotify()
+//{
+
+
+
+//    let client_credential = SpotifyClientCredentials::default()
+ //        .client_id("this-is-my-client-id")
+ //       .client_secret("this-is-my-client-secret")
+ //       .build();
+ //   let spotify = Spotify::default()
+ //   .client_credentials_manager(client_credential)
+   // .build();
+  //  let history = spotify.current_user_recently_played(10).await;
+  //  println!("{:?}", history);
+  //  
+    
+//}
 
