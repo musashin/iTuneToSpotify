@@ -21,3 +21,11 @@ import * as wasm from "i-tune-to-spotify";
                 }
             });
         });
+
+  $(function () {
+            $("#loginBtn").bind("click", function () {
+                
+                            wasm.spot_login();
+                         
+            });
+        });

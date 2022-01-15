@@ -43,6 +43,14 @@ pub fn loadlib(file_reader : web_sys::FileReader) {
     
 }
 
+#[wasm_bindgen()]
+pub fn spot_login() {
+
+      log_into_spotify();
+ 
+    
+}
+
 #[derive(PartialEq)]
 enum ParseEvent {
     Parsing,
@@ -89,9 +97,9 @@ impl Borrow<String> for Artist {
 //todo make async
 fn parse_library(library_file_text:&str)
 {
-    log_into_spotify();
+  
 
-    return;
+
 
     let parser = xml::reader::EventReader::from_str(library_file_text);
     let mut parse_state = ParseEvent::Parsing;
