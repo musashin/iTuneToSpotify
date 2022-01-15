@@ -174,63 +174,42 @@ fn parse_library(library_file_text:&str)
 
 
 use oauth2::{
-    AuthorizationCode,
     AuthUrl,
     ClientId,
     ClientSecret,
     CsrfToken,
-    PkceCodeChallenge,
     RedirectUrl,
-    Scope,
-    TokenResponse,
-    TokenUrl
+    Scope
+  
 };
 use oauth2::basic::BasicClient;
-use oauth2::reqwest::async_http_client;
 use url::Url;
 
-async fn log_into_spotify()->Result<(), Box<dyn std::error::Error>> {
+fn log_into_spotify()->Result<(), Box<dyn std::error::Error>> {
 
-// Create an OAuth2 client by specifying the client ID, client secret, authorization URL and
-// token URL.
-let client =
+    log!("login started");
+    let client =
     BasicClient::new(
-        ClientId::new("client_id".to_string()),
-        Some(ClientSecret::new("client_secret".to_string())),
-        AuthUrl::new("http://authorize".to_string())?,
-        Some(TokenUrl::new("http://token".to_string())?)
-    )
-    // Set the URL the user will be redirected to after the authorization process.
-    .set_redirect_uri(RedirectUrl::new("http://redirect".to_string())?);
+        ClientId::new("6ccf804ccf54423283485223d1f93a66".to_string()),
+        Some(ClientSecret::new("3483748c7f3f40c7a27615062e9df410".to_string())),
+        AuthUrl::new("https://accounts.spotify.com/authorize".to_string())?,
+        None
+    ).set_redirect_uri(RedirectUrl::new("http://localhost:8080/callback".to_string())?);
 
-// Generate a PKCE challenge.
-let (pkce_challenge, pkce_verifier) = PkceCodeChallenge::new_random_sha256();
 
 // Generate the full authorization URL.
 let (auth_url, csrf_token) = client
     .authorize_url(CsrfToken::new_random)
-    // Set the desired scopes.
-    .add_scope(Scope::new("read".to_string()))
-    .add_scope(Scope::new("write".to_string()))
-    // Set the PKCE code challenge.
-    .set_pkce_challenge(pkce_challenge)
+    .use_implicit_flow()
     .url();
 
 // This is the URL you should redirect the user to, in order to trigger the authorization
 // process.
-println!("Browse to: {}", auth_url);
+log!("Browse to: {}", auth_url);
 
-// Once the user has been redirected to the redirect URL, you'll have access to the
-// authorization code. For security reasons, your code should verify that the `state`
-// parameter returned by the server matches `csrf_state`.
-
-// Now you can trade it for an access token.
-let token_result = client
-    .exchange_code(AuthorizationCode::new("some authorization code".to_string()))
-    // Set the PKCE code verifier.
-    .set_pkce_verifier(pkce_verifier)
-    .request_async(async_http_client)
-    .await?;
+let window = web_sys::window().expect("no global `window` exists");
+    window.open_with_url(&auth_url.to_string()).expect("Could not open URL");
+    //window.location = auth_url;
 
 // Unwrapping token_result will either produce a Token or a RequestTokenError.
 

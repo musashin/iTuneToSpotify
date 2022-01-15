@@ -20,5 +20,10 @@ https://github.com/spotify/web-api-auth-examples/blob/master/implicit_grant/publ
 https://developers.google.com/identity/protocols/oauth2/javascript-implicit-flow?hl=fr
 https://developer.spotify.com/documentation/general/guides/authorization/implicit-grant/
 
+
+https://developer.spotify.com/dashboard/
+
+DOM: https://rustwasm.github.io/wasm-bindgen/examples/dom.html
+
 wasm-pack build
 npm run start
