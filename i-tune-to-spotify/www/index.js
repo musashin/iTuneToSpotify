@@ -29,3 +29,6 @@ import * as wasm from "i-tune-to-spotify";
                          
             });
         });
+
+
+  wasm.on_load();

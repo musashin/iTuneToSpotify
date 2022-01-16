@@ -20,8 +20,8 @@ extern {
 }
 
 #[wasm_bindgen]
-pub fn greet() {
-    alert("Hello, Nicolas!");
+pub fn on_load() {
+    log!("Loading Page");
 }
 
 
@@ -209,6 +209,7 @@ fn log_into_spotify()->Result<(), Box<dyn std::error::Error>> {
 let (auth_url, csrf_token) = client
     .authorize_url(CsrfToken::new_random)
     .use_implicit_flow()
+    .add_scope(Scope::new("user-library-modify".to_string()))
     .url();
 
 // This is the URL you should redirect the user to, in order to trigger the authorization
