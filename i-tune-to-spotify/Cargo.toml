@@ -17,6 +17,8 @@ stdweb = "0.4.2"
 oauth2 = {version = "4.1", features = ["reqwest"]}
 anyhow = "1.0.52"
 url= "*"
+regex = "1.5.4"
+reqwest = "*"
 
 
 # The `console_error_panic_hook` crate provides better debugging of panics by
@@ -42,6 +44,7 @@ features = [
   'HtmlElement',
   'Node',
   'Window',
+  'Storage'
 ]
 
 

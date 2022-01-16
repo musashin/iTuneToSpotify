@@ -25,5 +25,9 @@ https://developer.spotify.com/dashboard/
 
 DOM: https://rustwasm.github.io/wasm-bindgen/examples/dom.html
 
+https://github.com/rustwasm/wasm-bindgen/blob/main/examples/todomvc/src/store.rs
+
+https://blog.logrocket.com/making-http-requests-rust-reqwest/
+
 wasm-pack build
 npm run start

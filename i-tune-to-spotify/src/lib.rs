@@ -1,11 +1,25 @@
 mod utils;
 extern crate xml;
 extern crate stdweb;
+extern crate web_sys;
+use stdweb::web::document;
+
 use std::collections::HashSet;
 use std::borrow::Borrow;
 use std::hash::{Hash, Hasher};
 
+use oauth2::{
+    AuthUrl,
+    ClientId,
+    ClientSecret,
+    CsrfToken,
+    RedirectUrl,
+    Scope
+  
+};
+use oauth2::basic::BasicClient;
 
+use reqwest;
 use wasm_bindgen::prelude::*;
 
 // When the `wee_alloc` feature is enabled, use `wee_alloc` as the global
@@ -19,9 +33,64 @@ extern {
     fn alert(s: &str);
 }
 
+use regex::Regex;
+
+async fn get_user_name(token: &str)
+{
+    log!("trying to get user name");
+    let client = reqwest::Client::new();
+    let response = client
+    .get("https://api.spotify.com/v1/me")
+    .header("Authorization:", format!("Bearer {}", token))
+    .send()
+    .await
+    .unwrap();
+
+    log!("response {:?}",response);
+}
+
 #[wasm_bindgen]
 pub fn on_load() {
     log!("Loading Page");
+
+    let window = web_sys::window().expect("no global `window` exists");
+    let document = window.document().expect("should have a document on window");
+    let url = document.url().expect("should have a URL");
+    log!("Loading Page {}",url);
+
+    ///#access_token=([\w-]*)&token_type=([\w]*)&expires_in=([\d]*)&state=([\w]*)
+    let re = Regex::new(r"#access_token=([\w-]*)&token_type=([\w]*)&expires_in=([\d]*)&state=([\w]*)").unwrap();
+    let caps = re.captures(&url).unwrap();
+
+
+    log!("caps[0] {}",&caps[0]);
+    log!("caps[1] {}",&caps[1]);
+    log!("caps[2] {}",&caps[2]);
+    log!("caps[3] {}",&caps[3]);
+    log!("caps[4] {}",&caps[4]);
+
+    //TODO handle the case where we get errors... not token
+
+    if let Ok(Some(local_storage)) = window.local_storage()
+    {
+        if let Ok(Some(value)) = local_storage.get_item(&"spotify_auth_state")
+        {
+            log!("Stored State {} URL State {}",value,&caps[4]);
+
+            get_user_name(&caps[1]);
+            if value == &caps[4]
+            {
+                get_user_name(&caps[1]);
+
+            }
+
+        }
+    }
+
+
+
+    
+
 }
 
 
@@ -181,17 +250,8 @@ fn parse_library(library_file_text:&str)
 }
 
 
-use oauth2::{
-    AuthUrl,
-    ClientId,
-    ClientSecret,
-    CsrfToken,
-    RedirectUrl,
-    Scope
-  
-};
-use oauth2::basic::BasicClient;
-use url::Url;
+
+
 
 fn log_into_spotify()->Result<(), Box<dyn std::error::Error>> {
 
@@ -212,11 +272,21 @@ let (auth_url, csrf_token) = client
     .add_scope(Scope::new("user-library-modify".to_string()))
     .url();
 
+ let window = web_sys::window().expect("no global `window` exists");
+
+
+ if let Ok(Some(local_storage)) = window.local_storage()
+ {
+    local_storage.set_item("spotify_auth_state", csrf_token.secret()).unwrap();
+ }
+
+
+
 // This is the URL you should redirect the user to, in order to trigger the authorization
 // process.
 log!("Browse to: {}", auth_url);
 
-let window = web_sys::window().expect("no global `window` exists");
+
     window.open_with_url(&auth_url.to_string()).expect("Could not open URL");
     //window.location = auth_url;
 
