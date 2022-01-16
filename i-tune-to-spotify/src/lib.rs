@@ -202,7 +202,7 @@ fn log_into_spotify()->Result<(), Box<dyn std::error::Error>> {
         Some(ClientSecret::new("3483748c7f3f40c7a27615062e9df410".to_string())),
         AuthUrl::new("https://accounts.spotify.com/authorize".to_string())?,
         None
-    ).set_redirect_uri(RedirectUrl::new("http://localhost:8080/callback".to_string())?);
+    ).set_redirect_uri(RedirectUrl::new("http://localhost:8080/".to_string())?);
 
 
 // Generate the full authorization URL.

@@ -17,3 +17,12 @@
 
 
 </html>
+ <script>
+      (function() {
+        var params = getHashParams();
+
+        var access_token = params.access_token,
+        state = params.state,
+        storedState = localStorage.getItem(stateKey);
+      })();
+    </script>
